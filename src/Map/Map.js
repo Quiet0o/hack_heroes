@@ -1,45 +1,43 @@
-
-import React, { useRef, useEffect } from "react";
-import mapboxgl from "mapbox-gl";
+import React, { useState } from "react";
+import Map, {
+  FullscreenControl,
+  GeolocateControl,
+  Marker,
+  NavigationControl,
+} from "react-map-gl";
+import "mapbox-gl/dist/mapbox-gl.css";
 import geoJson from "./sample_data.json";
 
-mapboxgl.accessToken =
-  "pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA";
+const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN;
 
-const Map = () => {
-  const mapContainerRef = useRef(null);
+function MapRender() {
+  const [viewState, setViewState] = useState({
+    latitude: 37.8,
+    longitude: -122.4,
+    zoom: 14,
+  });
 
-  // Initialize map when component mounts
-  useEffect(() => {
-    const map = new mapboxgl.Map({
-      container: mapContainerRef.current,
-      style: "mapbox://styles/mapbox/streets-v11",
-      center: [-87.65, 41.84],
-      zoom: 10,
-    });
+  return (
+    <Map
+      {...viewState}
+      onMove={(evt) => setViewState(evt.viewState)}
+      style={{ width: window.innerWidth, height: window.innerHeight }}
+      mapStyle="mapbox://styles/mapbox/streets-v9"
+      mapboxAccessToken={MAPBOX_TOKEN}
+    >
+      <GeolocateControl position="top-right" />
+      <FullscreenControl position="top-right" />
+      <NavigationControl position="top-right" />
 
-    var marker = new mapboxgl.Marker();
+      {geoJson.features.map((features) => (
+        <Marker
+          longitude={features.geometry.coordinates[0]}
+          latitude={features.geometry.coordinates[1]}
+          color="blue"
+        />
+      ))}
+    </Map>
+  );
+}
 
-    function add_marker (event) {
-        var coordinates = event.lngLat;
-        console.log('Lng:', coordinates.lng, 'Lat:', coordinates.lat);
-        marker.setLngLat(coordinates).addTo(map);
-      }
-
-      map.on('click', add_marker);
-    // Create default markers
-    geoJson.features.map((feature) =>
-      new mapboxgl.Marker().setLngLat(feature.geometry.coordinates).addTo(map).setPopup(feature.geometry.popup)
-    );
-
-    // Add navigation control (the +/- zoom buttons)
-    map.addControl(new mapboxgl.NavigationControl(), "top-right");
-
-    // Clean up on unmount
-    return () => map.remove();
-  }, []);
-
-  return <div className="map-container" ref={mapContainerRef} />;
-};
-
-export default Map;
+export default MapRender;

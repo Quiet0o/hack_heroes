@@ -1,10 +1,10 @@
-import Map from "./Map/Map";
+import MapRender from "./Map/Map";
 
 function App() {
 
   return (
     <div>
-      <Map></Map>
+      <MapRender></MapRender>
     </div>
   );
 }
