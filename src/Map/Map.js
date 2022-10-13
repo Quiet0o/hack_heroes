@@ -18,9 +18,18 @@ const Map = () => {
       zoom: 10,
     });
 
+    var marker = new mapboxgl.Marker();
+
+    function add_marker (event) {
+        var coordinates = event.lngLat;
+        console.log('Lng:', coordinates.lng, 'Lat:', coordinates.lat);
+        marker.setLngLat(coordinates).addTo(map);
+      }
+
+      map.on('click', add_marker);
     // Create default markers
     geoJson.features.map((feature) =>
-      new mapboxgl.Marker().setLngLat(feature.geometry.coordinates).addTo(map)
+      new mapboxgl.Marker().setLngLat(feature.geometry.coordinates).addTo(map).setPopup(feature.geometry.popup)
     );
 
     // Add navigation control (the +/- zoom buttons)
