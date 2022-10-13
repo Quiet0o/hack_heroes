@@ -23,7 +23,6 @@ function MapRender() {
   const handleMarkerClick = (id, lat, long) => {
     setCurrentPlaceId(id);
     setViewState({ ...viewState,latitude: lat, longitude: long });
-    console.log(viewState);
   };
   return (
     <Map
@@ -46,10 +45,11 @@ function MapRender() {
           longitude={features.geometry.coordinates[0]}
           latitude={features.geometry.coordinates[1]}
           color="blue"
-          cursor="pointer"
+          style={{cursor:"pointer"}}
           onClick={() => handleMarkerClick( features.id,features.geometry.coordinates[1], features.geometry.coordinates[0])}
-        />
-        {features._id === currentPlaceId && (
+        >
+        </Marker>
+        {features.id === currentPlaceId && (
          <Popup
          key={features.id}
          longitude={features.geometry.coordinates[0]}
