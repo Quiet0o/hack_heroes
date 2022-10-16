@@ -6,24 +6,33 @@ import Map, {
   NavigationControl,
   Popup,
 } from "react-map-gl";
-// import "mapbox-gl/dist/mapbox-gl.css";
 import geoJson from "./sample_data.json";
 
 const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN;
 
 function MapRender() {
+
   const [viewState, setViewState] = useState({
     latitude: 37.8,
     longitude: -122.4,
     zoom: 14,
   });
-  const [showPopup, setShowPopup] = useState({});
   const [currentPlaceId, setCurrentPlaceId] = useState(null);
+  const [newPlace, setNewPlace] = useState(null);
 
   const handleMarkerClick = (id, lat, long) => {
     setCurrentPlaceId(id);
     setViewState({ ...viewState,latitude: lat, longitude: long });
   };
+
+  const handleAddNewPin = (e) => {
+
+    setNewPlace({
+      lat: e.lngLat.lat,
+      long: e.lngLat.lng,
+    });
+  };
+
   return (
     <Map
       {...viewState}
@@ -32,6 +41,7 @@ function MapRender() {
 
       mapStyle="mapbox://styles/mapbox/streets-v9"
       mapboxAccessToken={MAPBOX_TOKEN}
+      onDblClick={handleAddNewPin}
       onViewStateChange={(viewState) => setViewState(viewState)}
     >
       <GeolocateControl position="top-right" />
@@ -64,7 +74,17 @@ function MapRender() {
         )}
         </>
       ))}
+      {newPlace && (
+         <>
+         <Marker
+           latitude={newPlace.lat}
+           longitude={newPlace.long}
 
+         >
+
+         </Marker>
+         </>
+      )}
     </Map>
   );
 }
